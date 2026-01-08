@@ -1,6 +1,4 @@
-import zxcvbn, { IZXCVBNResult } from "zxcvbn-typescript";
-import Mustache from "mustache";
-import $ from "jquery";
+import zxcvbn, { type IZXCVBNResult } from "zxcvbn-typescript";
 
 const test_passwords = `\
 zxcvbn
@@ -291,13 +289,13 @@ const props_tmpl = `\
 `;
 
 function round_to_x_digits(n: number, x: number) {
-  return Math.round(n * Math.pow(10, x)) / Math.pow(10, x);
+  return Math.round(n * 10 ** x) / 10 ** x;
 }
 
 function round_logs(r: IZXCVBNResult) {
   r.guesses_log10 = round_to_x_digits(r.guesses_log10, 5);
   return r.sequence.map(
-    (m) => (m.guesses_log10 = round_to_x_digits(m.guesses_log10 || 0, 5))
+    (m) => (m.guesses_log10 = round_to_x_digits(m.guesses_log10 || 0, 5)),
   );
 }
 
@@ -318,7 +316,7 @@ for (const password of test_passwords.split("\n").filter((c) => c)) {
     sequence_display: Mustache.render(props_tmpl, r),
     guess_times_display: Mustache.render(
       guess_times_tmpl,
-      r.crack_times_display
+      r.crack_times_display,
     ),
     feedback_has_suggestions: r.feedback.suggestions.length > 0,
     feedback_display: Mustache.render(feedback_tmpl, r.feedback),
@@ -333,7 +331,7 @@ $(document).ready(() => {
 });
 
 let last_q = "";
-const _listener = function () {
+const _listener = () => {
   const current = ($("#search-bar").val() || "").toString();
   if (!current) {
     $("#search-results").html("");
@@ -348,7 +346,7 @@ const _listener = function () {
       sequence_display: Mustache.render(props_tmpl, r),
       guess_times_display: Mustache.render(
         guess_times_tmpl,
-        r.crack_times_display
+        r.crack_times_display,
       ),
       feedback_has_suggestions: r.feedback.suggestions.length > 0,
       feedback_display: Mustache.render(feedback_tmpl, r.feedback),
