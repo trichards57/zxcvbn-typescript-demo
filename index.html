@@ -2,7 +2,7 @@
 <html>
   <head>
     <title>zxcvbn tests</title>
-    <script type="" src="zxcvbn.js"></script>
+    <script type="module" src="lib/index.js"></script>
     <style type="text/css">
       body {
         font-family: monospace;
@@ -42,5 +42,253 @@
       <h2 id="examples">examples</h2>
       <div id="results"></div>
     </div>
+
+    <!-- Web Component Templates -->
+    <template id="password-result-template">
+      <style>
+        :host {
+          display: block;
+          margin-bottom: 20px;
+        }
+        table {
+          width: 100%;
+        }
+      </style>
+      <div class="row">
+        <table class="result">
+          <tr>
+            <td>password: </td>
+            <td colspan="2"><strong data-field="password"></strong></td>
+          </tr>
+          <tr>
+            <td>guesses_log10: </td>
+            <td colspan="2" data-field="guesses_log10"></td>
+          </tr>
+          <tr>
+            <td>score: </td>
+            <td><span data-field="score"></span> / 4</td>
+          </tr>
+          <tr>
+            <td>function runtime (ms): </td>
+            <td colspan="2" data-field="calc_time"></td>
+          </tr>
+          <tr>
+            <td colspan="3">guess times:</td>
+          </tr>
+          <tr>
+            <td colspan="3">
+              <guess-times></guess-times>
+            </td>
+          </tr>
+          <tr>
+            <td colspan="3">
+              <feedback-display></feedback-display>
+            </td>
+          </tr>
+          <tr>
+            <td colspan="3"><strong>match sequence:</strong></td>
+          </tr>
+          <tr>
+            <td colspan="3">
+              <match-sequence></match-sequence>
+            </td>
+          </tr>
+        </table>
+      </div>
+    </template>
+
+    <template id="guess-times-template">
+      <table>
+        <tr>
+          <td>100 / hour:</td>
+          <td data-field="online_throttling_100_per_hour"></td>
+          <td> (throttled online attack)</td>
+        </tr>
+        <tr>
+          <td>10&nbsp; / second:</td>
+          <td data-field="online_no_throttling_10_per_second"></td>
+          <td> (unthrottled online attack)</td>
+        </tr>
+        <tr>
+          <td>10k / second:</td>
+          <td data-field="offline_slow_hashing_1e4_per_second"></td>
+          <td> (offline attack, slow hash, many cores)</td>
+        </tr>
+        <tr>
+          <td>10B / second:</td>
+          <td data-field="offline_fast_hashing_1e10_per_second"></td>
+          <td> (offline attack, fast hash, many cores)</td>
+        </tr>
+      </table>
+    </template>
+
+    <template id="feedback-display-template">
+      <table>
+        <tr data-row="warning" hidden>
+          <td>warning: </td>
+          <td colspan="2" data-field="warning"></td>
+        </tr>
+        <tr data-row="suggestions" hidden>
+          <td style="vertical-align: top">suggestions:</td>
+          <td colspan="2" data-field="suggestions"></td>
+        </tr>
+      </table>
+    </template>
+
+    <template id="match-sequence-template">
+      <style>
+        .match-sequence-container {
+          display: block;
+        }
+        table {
+          display: inline;
+          margin-right: 30px;
+          margin-bottom: 20px;
+        }
+        table:nth-child(odd) {
+          background-color: #ccc;
+        }
+        table:nth-child(even) {
+          background-color: #eee;
+        }
+      </style>
+      <div class="match-sequence-container" data-container="matches"></div>
+    </template>
+
+    <template id="match-item-template">
+      <table>
+        <tr>
+          <td colspan="2">'<span data-field="token"></span>'</td>
+        </tr>
+        <tr>
+          <td>pattern:</td>
+          <td data-field="pattern"></td>
+        </tr>
+        <tr>
+          <td>guesses_log10:</td>
+          <td data-field="guesses_log10"></td>
+        </tr>
+        <!-- Bruteforce section -->
+        <tbody data-section="bruteforce" hidden>
+          <tr>
+            <td>cardinality:</td>
+            <td data-field="cardinality"></td>
+          </tr>
+          <tr>
+            <td>length:</td>
+            <td data-field="length"></td>
+          </tr>
+        </tbody>
+        <!-- Dictionary section -->
+        <tbody data-section="dictionary" hidden>
+          <tr>
+            <td>dictionary_name:</td>
+            <td data-field="dictionary_name"></td>
+          </tr>
+          <tr>
+            <td>rank:</td>
+            <td data-field="rank"></td>
+          </tr>
+          <tr>
+            <td>reversed:</td>
+            <td data-field="reversed"></td>
+          </tr>
+          <!-- L33t subsection -->
+          <tbody data-section="l33t" hidden>
+            <tr>
+              <td>l33t subs:</td>
+              <td data-field="sub_display"></td>
+            </tr>
+            <tr>
+              <td>un-l33ted:</td>
+              <td data-field="matched_word"></td>
+            </tr>
+          </tbody>
+          <tr>
+            <td>base-guesses:</td>
+            <td data-field="base_guesses"></td>
+          </tr>
+          <tr>
+            <td>uppercase-variations:</td>
+            <td data-field="uppercase_variations"></td>
+          </tr>
+          <tr>
+            <td>l33t-variations:</td>
+            <td data-field="l33t_variations"></td>
+          </tr>
+        </tbody>
+        <!-- Spatial section -->
+        <tbody data-section="spatial" hidden>
+          <tr>
+            <td>graph:</td>
+            <td data-field="graph"></td>
+          </tr>
+          <tr>
+            <td>turns:</td>
+            <td data-field="turns"></td>
+          </tr>
+          <tr>
+            <td>shifted count:</td>
+            <td data-field="shifted_count"></td>
+          </tr>
+        </tbody>
+        <!-- Repeat section -->
+        <tbody data-section="repeat" hidden>
+          <tr>
+            <td>base_token:</td>
+            <td>'<span data-field="base_token"></span>'</td>
+          </tr>
+          <tr>
+            <td>base_guesses:</td>
+            <td data-field="base_guesses_repeat"></td>
+          </tr>
+          <tr>
+            <td>num_repeats:</td>
+            <td data-field="repeat_count"></td>
+          </tr>
+        </tbody>
+        <!-- Sequence section -->
+        <tbody data-section="sequence" hidden>
+          <tr>
+            <td>sequence-name:</td>
+            <td data-field="sequence_name"></td>
+          </tr>
+          <tr>
+            <td>sequence-size</td>
+            <td data-field="sequence_space"></td>
+          </tr>
+          <tr>
+            <td>ascending:</td>
+            <td data-field="ascending"></td>
+          </tr>
+        </tbody>
+        <!-- Regex section -->
+        <tbody data-section="regex" hidden>
+          <tr>
+            <td>regex_name:</td>
+            <td data-field="regex_name"></td>
+          </tr>
+        </tbody>
+        <!-- Date section -->
+        <tbody data-section="date" hidden>
+          <tr>
+            <td>day:</td>
+            <td data-field="day"></td>
+          </tr>
+          <tr>
+            <td>month:</td>
+            <td data-field="month"></td>
+          </tr>
+          <tr>
+            <td>year:</td>
+            <td data-field="year"></td>
+          </tr>
+          <tr>
+            <td>separator:</td>
+            <td>'<span data-field="separator"></span>'</td>
+          </tr>
+        </tbody>
+      </table>
+    </template>
   </body>
 </html>

@@ -5,17 +5,15 @@
   "description": "Demo project for zxcvbn-typescript",
   "main": "index.ts",
   "scripts": {
-    "build": "tsc && browserify --debug --standalone zxcvbn index.js > zxcvbn.js"
+    "build": "rolldown -c",
+    "start": "http-server -c-1 -o"
   },
   "author": "Tony Richards",
   "license": "MIT",
   "dependencies": {
-    "@types/jquery": "^3.5.2",
-    "@types/mustache": "^4.0.1",
-    "browserify": "^17.0.0",
-    "jquery": "^3.5.1",
-    "mustache": "^4.0.1",
-    "typescript": "^4.0.3",
-    "zxcvbn-typescript": "^5.0.0-beta.4"
+    "http-server": "^14.1.1",
+    "rolldown": "^1.0.0-beta.59",
+    "typescript": "^5.9.3",
+    "zxcvbn-typescript": "^6.0.0-beta.1"
   }
 }
