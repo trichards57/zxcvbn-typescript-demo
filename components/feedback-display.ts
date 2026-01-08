@@ -1,9 +1,8 @@
-export interface Feedback {
-  warning?: string;
-  suggestions: string[];
-}
+import { IZXCVBNResult } from "zxcvbn-typescript";
 
 export class FeedbackDisplayElement extends HTMLElement {
+  private _data: IZXCVBNResult["feedback"] | undefined;
+
   constructor() {
     super();
     this.attachShadow({ mode: "open" });
@@ -11,25 +10,33 @@ export class FeedbackDisplayElement extends HTMLElement {
 
   connectedCallback() {
     const template = document.getElementById(
-      "feedback-display-template",
+      "feedback-display-template"
     ) as HTMLTemplateElement;
     if (template && this.shadowRoot) {
       this.shadowRoot.appendChild(template.content.cloneNode(true));
     }
+
+    this.updateDisplay();
   }
 
-  set data(value: Feedback) {
-    if (!this.shadowRoot) return;
+  set data(value: IZXCVBNResult["feedback"]) {
+    this._data = value;
 
+    this.updateDisplay();
+  }
+
+  private updateDisplay() {
+    if (!this.shadowRoot) return;
+    if (!this._data) return;
     // Handle warning
     const warningRow = this.shadowRoot.querySelector('[data-row="warning"]');
     const warningValue = this.shadowRoot.querySelector(
-      '[data-field="warning"]',
+      '[data-field="warning"]'
     );
-    if (value.warning) {
+    if (this._data.warning) {
       warningRow?.removeAttribute("hidden");
       if (warningValue) {
-        warningValue.textContent = value.warning;
+        warningValue.textContent = this._data.warning;
       }
     } else {
       warningRow?.setAttribute("hidden", "");
@@ -37,15 +44,15 @@ export class FeedbackDisplayElement extends HTMLElement {
 
     // Handle suggestions
     const suggestionsRow = this.shadowRoot.querySelector(
-      '[data-row="suggestions"]',
+      '[data-row="suggestions"]'
     );
     const suggestionsList = this.shadowRoot.querySelector(
-      '[data-field="suggestions"]',
+      '[data-field="suggestions"]'
     );
-    if (value.suggestions.length > 0) {
+    if (this._data.suggestions.length > 0) {
       suggestionsRow?.removeAttribute("hidden");
       if (suggestionsList) {
-        suggestionsList.innerHTML = value.suggestions
+        suggestionsList.innerHTML = this._data.suggestions
           .map((s) => `- ${this.escapeHtml(s)} <br />`)
           .join("");
       }

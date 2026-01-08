@@ -1,6 +1,8 @@
 import type { IAnyMatch } from "zxcvbn-typescript";
 
 export class MatchSequenceElement extends HTMLElement {
+  private _data: IAnyMatch[] = [];
+
   constructor() {
     super();
     this.attachShadow({ mode: "open" });
@@ -17,6 +19,12 @@ export class MatchSequenceElement extends HTMLElement {
   }
 
   set data(matches: IAnyMatch[]) {
+    this._data = matches;
+
+    this.updateDisplay();
+  }
+
+  private updateDisplay() {
     if (!this.shadowRoot) return;
 
     const container = this.shadowRoot.querySelector(
@@ -28,7 +36,7 @@ export class MatchSequenceElement extends HTMLElement {
     container.innerHTML = "";
 
     // Create a match item for each match
-    for (const match of matches) {
+    for (const match of this._data) {
       const matchItemTemplate = document.getElementById(
         "match-item-template"
       ) as HTMLTemplateElement;

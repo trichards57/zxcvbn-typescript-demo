@@ -1,11 +1,8 @@
-export interface CrackTimesDisplay {
-  online_throttling_100_per_hour?: string;
-  online_no_throttling_10_per_second?: string;
-  offline_slow_hashing_1e4_per_second?: string;
-  offline_fast_hashing_1e10_per_second?: string;
-}
+import { IZXCVBNResult } from "zxcvbn-typescript";
 
 export class GuessTimesElement extends HTMLElement {
+  private _data: IZXCVBNResult["crack_times_display"] | undefined;
+
   constructor() {
     super();
     this.attachShadow({ mode: "open" });
@@ -13,31 +10,40 @@ export class GuessTimesElement extends HTMLElement {
 
   connectedCallback() {
     const template = document.getElementById(
-      "guess-times-template",
+      "guess-times-template"
     ) as HTMLTemplateElement;
     if (template && this.shadowRoot) {
       this.shadowRoot.appendChild(template.content.cloneNode(true));
     }
+
+    this.updateDisplay();
   }
 
-  set data(value: CrackTimesDisplay) {
+  set data(value: IZXCVBNResult["crack_times_display"]) {
+    this._data = value;
+
+    this.updateDisplay();
+  }
+
+  private updateDisplay() {
     if (!this.shadowRoot) return;
+    if (!this._data) return;
 
     this.setTextContent(
       '[data-field="online_throttling_100_per_hour"]',
-      value.online_throttling_100_per_hour,
+      this._data.online_throttling_100_per_hour
     );
     this.setTextContent(
       '[data-field="online_no_throttling_10_per_second"]',
-      value.online_no_throttling_10_per_second,
+      this._data.online_no_throttling_10_per_second
     );
     this.setTextContent(
       '[data-field="offline_slow_hashing_1e4_per_second"]',
-      value.offline_slow_hashing_1e4_per_second,
+      this._data.offline_slow_hashing_1e4_per_second
     );
     this.setTextContent(
       '[data-field="offline_fast_hashing_1e10_per_second"]',
-      value.offline_fast_hashing_1e10_per_second,
+      this._data.offline_fast_hashing_1e10_per_second
     );
   }
 
